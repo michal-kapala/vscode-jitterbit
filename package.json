@@ -1,0 +1,25 @@
+{
+  "name": "jitterbit",
+  "displayName": "Jitterbit",
+  "description": "Syntax support for Jitterbit Script language.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "jitterbit",
+      "aliases": ["Jitterbit Script", "jitterbit"],
+      "extensions": [".jitterbit",".jb"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "jitterbit",
+      "scopeName": "source.jitterbit",
+      "path": "./syntaxes/jitterbit.tmLanguage.json"
+    }]
+  }
+}

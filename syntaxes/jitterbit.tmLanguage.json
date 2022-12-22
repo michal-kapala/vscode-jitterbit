@@ -1,0 +1,239 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Jitterbit Script",
+	"patterns": [
+		{
+			"include": "#meta"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#functionCall"
+		},
+		{
+			"include": "#variables"
+		}
+	],
+	"repository": {
+		"comments": {
+			"name":"comment",
+			"patterns": [
+				{
+					"name": "comment.line.double-slash",
+					"match": "\\/\\/.*(?=\\n)"
+				},
+				{
+					"name": "comment.block",
+					"begin": "(.|\\s)(?=\\/\\*)",
+					"end": "(?<=\\*\\/)(.|\\s)",
+					"match": "\\/\\*(.|\\s|\\r\\n)*\\*\\/"
+				}
+			]
+		},
+		"constants": {
+			"name": "constant.language.jitterbit",
+			"patterns": [
+				{
+					"name": "constant.language.jitterbit.bool",
+					"match": "(true|false)"
+				},
+				{
+					"name": "constant.numeric.jitterbit.float",
+					"match": "[0-9]+\\.[0-9]+"
+				},
+				{
+					"name": "constant.numeric.jitterbit.int",
+					"match": "[0-9]+"
+				}
+			]
+		},
+		"functionCall": {
+			"name": "support.function.call",
+			"patterns": [
+				{
+					"name": "support.function.name",
+					"match": "\\w+(?=\\((.|\\s)*\\))"
+				},
+				{
+					"name": "variable.parameter",
+					"patterns": [
+						{
+							"name": "variable.parameter",
+							"include": "#constants"
+						},
+						{
+							"name": "variable.parameter",
+							"include": "#variables"
+						},
+						{
+							"name": "support.function.call",
+							"include": "#functionCall"
+						}
+					]
+				}
+			]
+		},
+		"keywords": {
+			"name": "keyword",
+			"patterns": [
+				{
+					"name": "keyword.operator.equal",
+					"match": "\\=\\="
+				},
+				{
+					"name": "keyword.operator.notEqual",
+					"match": "\\!\\="
+				},
+				{
+					"name": "keyword.operator.greaterEqual",
+					"match": "\\>\\="
+				},
+				{
+					"name": "keyword.operator.lessEqual",
+					"match": "\\<\\="
+				},
+				{
+					"name": "keyword.operator.greater",
+					"match": "\\>"
+				},
+				{
+					"name": "keyword.operator.less",
+					"match": "\\<"
+				},
+				{
+					"name": "keyword.operator.and",
+					"match": "\\&\\&"
+				},
+				{
+					"name": "keyword.operator.or",
+					"match": "\\|\\|"
+				},
+				{
+					"name": "keyword.operator.incrementation",
+					"match": "\\+\\+"
+				},
+				{
+					"name": "keyword.operator.decrementation",
+					"match": "\\-\\-"
+				},
+				{
+					"name": "keyword.operator.addAssign",
+					"match": "\\+\\="
+				},
+				{
+					"name": "keyword.operator.subAssign",
+					"match": "\\-\\="
+				},
+				{
+					"name": "keyword.operator.mulAssign",
+					"match": "\\*\\="
+				},
+				{
+					"name": "keyword.operator.divAssign",
+					"match": "\\/\\="
+				},
+				{
+					"name": "keyword.operator.addition",
+					"match": "\\+"
+				},
+				{
+					"name": "keyword.operator.multiplication",
+					"match": "\\*"
+				},
+				{
+					"name": "keyword.operator.division",
+					"match": "\\/"
+				},
+				{
+					"name": "keyword.operator.subtraction",
+					"match": "\\-"
+				},
+				{
+					"name": "keyword.operator.not",
+					"match": "\\!"
+				},
+				{
+					"name": "keyword.operator.assignment",
+					"match": "\\="
+				}
+			]
+		},
+		"meta": {
+			"name": "meta.scope.tag.trans.jitterbit",
+			"patterns": [
+				{
+					"name": "meta.tag.start.jitterbit",
+					"patterns": [
+						{
+							"name": "punctuation.definition.tag.trans.start.begin",
+							"match": "\\<(?=trans\\>)"
+						},
+						{
+							"name": "entity.name.tag.jitterbit",
+							"match": "(?<=\\<)trans(?=\\>)"
+						},
+						{
+							"name": "punctuation.definition.tag.trans.start.end",
+							"match": "(?<=\\<trans)\\>"
+						}
+					]
+				},
+				{
+					"name": "meta.tag.end.jitterbit",
+					"patterns": [
+						{
+							"name": "punctuation.definition.tag.trans.end.begin",
+							"match": "\\<\\/(?=trans\\>)"
+						},
+						{
+							"name": "entity.name.tag.jitterbit",
+							"match": "(?<=\\<\\/)trans(?=\\>)"
+						},
+						{
+							"name": "punctuation.definition.tag.trans.end.end",
+							"match": "(?<=\\<\\/trans)\\>"
+						}
+					]
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.jitterbit",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.jitterbit",
+					"match": "\\\\."
+				}
+			]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"name": "support.variable",
+					"match": "\\$jitterbit(\\.\\w+)+"
+				},
+				{
+					"name": "variable.name.global",
+					"match": "\\$\\w+(\\.\\w+)*"
+				},
+				{
+					"name": "variable.name.local",
+					"match": "(?<!\\$)[a-zA-z_]+[a-zA-Z0-9_]*"
+				}
+			]
+		}
+	},
+	"scopeName": "source.jitterbit"
+}
