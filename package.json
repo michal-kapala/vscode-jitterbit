@@ -15,6 +15,10 @@
       "id": "jitterbit",
       "aliases": ["Jitterbit Script", "jitterbit"],
       "extensions": [".jitterbit",".jb"],
+      "icon": {
+        "light": "./icons/jitterbit_icon.svg",
+        "dark": "./icons/jitterbit_icon.svg"
+      },
       "configuration": "./language-configuration.json"
     }],
     "grammars": [{
