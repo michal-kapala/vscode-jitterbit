@@ -4,36 +4,18 @@
 	"patterns": [
 		{
 			"include": "#meta"
-		},
-		{
-			"include": "#comments"
-		},
-		{
-			"include": "#constants"
-		},
-		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#strings"
-		},
-		{
-			"include": "#functionCall"
-		},
-		{
-			"include": "#variables"
 		}
 	],
 	"repository": {
 		"comments": {
-			"name":"comment",
+			"name":"comment.jitterbit",
 			"patterns": [
 				{
-					"name": "comment.line.double-slash",
+					"name": "comment.line.double-slash.jitterbit",
 					"match": "\\/\\/.*(?=\\n)"
 				},
 				{
-					"name": "comment.block",
+					"name": "comment.block.jitterbit",
 					"begin": "(.|\\s)(?=\\/\\*)",
 					"end": "(?<=\\*\\/)(.|\\s)",
 					"match": "\\/\\*(.|\\s|\\r\\n)*\\*\\/"
@@ -44,138 +26,225 @@
 			"name": "constant.language.jitterbit",
 			"patterns": [
 				{
-					"name": "constant.language.jitterbit.bool",
+					"name": "constant.language.bool.jitterbit",
 					"match": "(true|false)"
 				},
 				{
-					"name": "constant.numeric.jitterbit.float",
+					"name": "constant.numeric.float.jitterbit",
 					"match": "[0-9]+\\.[0-9]+"
 				},
 				{
-					"name": "constant.numeric.jitterbit.int",
+					"name": "constant.numeric.int.jitterbit",
 					"match": "[0-9]+"
 				}
 			]
 		},
-		"functionCall": {
-			"name": "support.function.call",
+		"errors": {
+			"name": "invalid.illegal.jitterbit",
 			"patterns": [
 				{
-					"name": "support.function.name",
-					"match": "\\w+(?=\\((.|\\s)*\\))"
-				},
-				{
-					"name": "variable.parameter",
+					"name": "invalid.illegal.frontOutOfScope.jitterbit",
 					"patterns": [
 						{
-							"name": "variable.parameter",
+							"name": "invalid.illegal.frontOutOfScope.jitterbit",
+							"patterns": [
+								{
+									"name": "invalid.illegal.frontOutOfScope.varDecl.jitterbit",
+									"match": ".+(?=(.|\\s)*<trans>)"
+								}
+							]
+						},
+						{
+							"name": "invalid.illegal.backOutOfScope.jitterbit",
+							"match": "(?<=<\\/trans>)\\s*(.)+"
+						}
+					]
+				}
+			]
+		},
+		"functionCall": {
+			"name": "support.function.call.jitterbit",
+			"patterns": [
+				{
+					"name": "support.function.name.control.jitterbit",
+					"match": "(?i:case|equal|if|while)(?=\\((.|\\s)*)"
+				},
+				{
+					"name": "support.function.name.jitterbit",
+					"match": "\\w+(?=\\((.|\\s)*)"
+				},
+				{
+					"name": "variable.parameter.jitterbit",
+					"patterns": [
+						{
+							"name": "variable.parameter.const.jitterbit",
 							"include": "#constants"
 						},
 						{
-							"name": "variable.parameter",
+							"name": "variable.parameter.var.jitterbit",
 							"include": "#variables"
 						},
 						{
-							"name": "support.function.call",
+							"name": "support.function.call.jitterbit",
 							"include": "#functionCall"
 						}
 					]
 				}
 			]
 		},
-		"keywords": {
-			"name": "keyword",
+		"operators": {
+			"name": "keyword.operator.jitterbit",
 			"patterns": [
 				{
-					"name": "keyword.operator.equal",
+					"name": "keyword.operator.equal.jitterbit",
 					"match": "\\=\\="
 				},
 				{
-					"name": "keyword.operator.notEqual",
+					"name": "keyword.operator.notEqual.jitterbit",
 					"match": "\\!\\="
 				},
 				{
-					"name": "keyword.operator.greaterEqual",
+					"name": "keyword.operator.greaterEqual.jitterbit",
 					"match": "\\>\\="
 				},
 				{
-					"name": "keyword.operator.lessEqual",
+					"name": "keyword.operator.lessEqual.jitterbit",
 					"match": "\\<\\="
 				},
 				{
-					"name": "keyword.operator.greater",
-					"match": "\\>"
+					"name": "keyword.operator.greater.jitterbit",
+					"match": "(?<!\\<\\/trans)\\>"
 				},
 				{
-					"name": "keyword.operator.less",
-					"match": "\\<"
+					"name": "keyword.operator.less.jitterbit",
+					"match": "\\<(?!\\/trans\\>)"
 				},
 				{
-					"name": "keyword.operator.and",
+					"name": "keyword.operator.and.jitterbit",
 					"match": "\\&\\&"
 				},
 				{
-					"name": "keyword.operator.or",
+					"name": "keyword.operator.or.jitterbit",
 					"match": "\\|\\|"
 				},
 				{
-					"name": "keyword.operator.incrementation",
+					"name": "keyword.operator.incrementation.jitterbit",
 					"match": "\\+\\+"
 				},
 				{
-					"name": "keyword.operator.decrementation",
+					"name": "keyword.operator.decrementation.jitterbit",
 					"match": "\\-\\-"
 				},
 				{
-					"name": "keyword.operator.addAssign",
+					"name": "keyword.operator.addAssign.jitterbit",
 					"match": "\\+\\="
 				},
 				{
-					"name": "keyword.operator.subAssign",
+					"name": "keyword.operator.subAssign.jitterbit",
 					"match": "\\-\\="
 				},
 				{
-					"name": "keyword.operator.mulAssign",
+					"name": "keyword.operator.mulAssign.jitterbit",
 					"match": "\\*\\="
 				},
 				{
-					"name": "keyword.operator.divAssign",
+					"name": "keyword.operator.divAssign.jitterbit",
 					"match": "\\/\\="
 				},
 				{
-					"name": "keyword.operator.addition",
+					"name": "keyword.operator.addition.jitterbit",
 					"match": "\\+"
 				},
 				{
-					"name": "keyword.operator.multiplication",
+					"name": "keyword.operator.multiplication.jitterbit",
 					"match": "\\*"
 				},
 				{
-					"name": "keyword.operator.division",
-					"match": "\\/"
+					"name": "keyword.operator.division.jitterbit",
+					"match": "\\/(?!trans\\>)"
 				},
 				{
-					"name": "keyword.operator.subtraction",
+					"name": "keyword.operator.subtraction.jitterbit",
 					"match": "\\-"
 				},
 				{
-					"name": "keyword.operator.not",
+					"name": "keyword.operator.not.jitterbit",
 					"match": "\\!"
 				},
 				{
-					"name": "keyword.operator.assignment",
+					"name": "keyword.operator.assignment.jitterbit",
 					"match": "\\="
 				}
 			]
 		},
 		"meta": {
-			"name": "meta.scope.tag.trans.jitterbit",
+			"name": "meta.scope.jitterbit",
+			"patterns": [
+				{
+					"name": "jitterbit.script.scope",
+					"patterns": [
+						{ 
+							"include": "#errors"
+						},
+						{
+							"include": "#tags"
+						},
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#constants"
+						},
+						{
+							"include": "#operators"
+						},
+						{
+							"include": "#strings"
+						},
+						{
+							"include": "#functionCall"
+						},
+						{
+							"include": "#variables"
+						}
+					]
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"name": "string.quoted.double.jitterbit",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.jitterbit",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name": "string.quoted.single.jitterbit",
+					"begin": "'",
+					"end": "'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.jitterbit",
+							"match": "\\\\."
+						}
+					]
+				}
+			]
+		},
+		"tags":{
+			"name": "meta.tag.jitterbit",
 			"patterns": [
 				{
 					"name": "meta.tag.start.jitterbit",
 					"patterns": [
 						{
-							"name": "punctuation.definition.tag.trans.start.begin",
+							"name": "punctuation.definition.tag.trans.start.begin.jitterbit",
 							"match": "\\<(?=trans\\>)"
 						},
 						{
@@ -183,7 +252,7 @@
 							"match": "(?<=\\<)trans(?=\\>)"
 						},
 						{
-							"name": "punctuation.definition.tag.trans.start.end",
+							"name": "punctuation.definition.tag.trans.start.end.jitterbit",
 							"match": "(?<=\\<trans)\\>"
 						}
 					]
@@ -192,7 +261,7 @@
 					"name": "meta.tag.end.jitterbit",
 					"patterns": [
 						{
-							"name": "punctuation.definition.tag.trans.end.begin",
+							"name": "punctuation.definition.tag.trans.end.begin.jitterbit",
 							"match": "\\<\\/(?=trans\\>)"
 						},
 						{
@@ -200,37 +269,26 @@
 							"match": "(?<=\\<\\/)trans(?=\\>)"
 						},
 						{
-							"name": "punctuation.definition.tag.trans.end.end",
+							"name": "punctuation.definition.tag.trans.end.end.jitterbit",
 							"match": "(?<=\\<\\/trans)\\>"
 						}
 					]
 				}
 			]
 		},
-		"strings": {
-			"name": "string.quoted.double.jitterbit",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.jitterbit",
-					"match": "\\\\."
-				}
-			]
-		},
 		"variables": {
 			"patterns": [
 				{
-					"name": "support.variable",
+					"name": "support.variable.jitterbit",
 					"match": "\\$jitterbit(\\.\\w+)+"
 				},
 				{
-					"name": "variable.name.global",
+					"name": "variable.name.global.jitterbit",
 					"match": "\\$\\w+(\\.\\w+)*"
 				},
 				{
-					"name": "variable.name.local",
-					"match": "(?<!\\$)[a-zA-z_]+[a-zA-Z0-9_]*"
+					"name": "variable.name.local.jitterbit",
+					"match": "(?<!\\$])[a-zA-Z\\_]+[a-zA-Z0-9\\_]*"
 				}
 			]
 		}
