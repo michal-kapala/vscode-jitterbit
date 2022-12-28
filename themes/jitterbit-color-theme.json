@@ -141,7 +141,7 @@
 	},
 	"tokenColors": [
 		{
-			"name": "Jitterbit Comments",
+			"name": "Comments",
 			"scope": [
 				"comment",
 				"comment.block.jitterbit",
@@ -173,6 +173,7 @@
 		{
 			"name": "Jitterbit Local Variables",
 			"scope": [
+				"variable.name",
 				"variable.name.local.jitterbit"
 			],
 			"settings": {
@@ -182,6 +183,7 @@
 		{
 			"name": "Jitterbit Constants",
 			"scope": [
+				"constant",
 				"constant.numeric.int.jitterbit",
 				"constant.numeric.float.jitterbit",
 				"constant.language.bool.jitterbit"
@@ -202,16 +204,16 @@
 			}
 		},
 		{
-			"name": "Jitterbit Escape Character",
+			"name": "Escaped Character",
 			"scope": [
-				"constant.character.escape.jitterbit"
+				"constant.character.escape"
 			],
 			"settings": {
 				"foreground": "#7156dc"
 			}
 		},
 		{
-			"name": "Jitterbit Invalid",
+			"name": "Invalid",
 			"scope": [
 				"invalid",
 				"invalid.illegal"
@@ -230,7 +232,7 @@
 			}
 		},
 		{
-			"name": "Jitterbit Punctuation",
+			"name": "Punctuation",
 			"scope": [
 				"constant.other.color",
 				"punctuation",
@@ -242,7 +244,7 @@
 			}
 		},
 		{
-			"name": "Jitterbit Tags",
+			"name": "Tags",
 			"scope": [
 				"entity.name.tag",
 				"entity.name.tag.jitterbit"
@@ -252,8 +254,9 @@
 			}
 		},
 		{
-			"name": "Jitterbit Functions",
+			"name": "API Functions",
 			"scope": [
+				"support.function",
 				"support.function.name.jitterbit",
 			],
 			"settings": {
