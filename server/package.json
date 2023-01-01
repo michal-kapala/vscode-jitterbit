@@ -1,0 +1,19 @@
+{
+	"name": "jitterbit-lsp-server",
+	"description": "Community Jitterbit Script LSP Server",
+	"version": "1.0.0",
+	"author": "Asinit Ltd.",
+	"license": "MIT",
+	"engines": {
+		"node": "*"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/michal-kapala/vscode-jitterbit"
+	},
+	"dependencies": {
+		"vscode-languageserver": "^7.0.0",
+		"vscode-languageserver-textdocument": "^1.0.4"
+	},
+	"scripts": {}
+}
