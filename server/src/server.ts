@@ -21,6 +21,12 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 
+import {
+	Diagnostic as JbDiagnostic,
+	Parser,
+	Typechecker
+} from 'jitterbit-script';
+
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -137,48 +143,52 @@ documents.onDidChangeContent(change => {
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
+	// TODO: Incremental updates because the editor slows down noticeably
+	const script = textDocument.getText();
+	const parser = new Parser();
+	const jbDiags: JbDiagnostic[] = [];
 
-	// The validator creates diagnostics for all uppercase words length 2 and more
-	const text = textDocument.getText();
-	const pattern = /\b[A-Z]{2,}\b/g;
-	let m: RegExpExecArray | null;
-
-	let problems = 0;
-	const diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-		problems++;
-		const diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Warning,
-			range: {
-				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length)
-			},
-			message: `${m[0]} is all uppercase.`,
-			source: 'ex'
-		};
-		if (hasDiagnosticRelatedInformationCapability) {
-			diagnostic.relatedInformation = [
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Spelling matters'
-				},
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Particularly for names'
-				}
-			];
-		}
-		diagnostics.push(diagnostic);
+	let diagnostics: Diagnostic[] = [];
+	try {
+		const ast = parser.parse(script, jbDiags);
+		const analysis = Typechecker.analyze(ast, jbDiags);
+		diagnostics = makeDiagnostics(analysis.diagnostics);
+	} catch(e) {
+		// jitterbit-script error - should be reported as an issue
+		console.error(e);
 	}
-
+	
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+}
+
+/**
+ * Transforms typechecker diagnostics into VSCode ones.
+ * @param diags 
+ */
+function makeDiagnostics(diags: JbDiagnostic[]): Diagnostic[] {
+	const result: Diagnostic[] = [];
+	for(const diag of diags) {
+		result.push(
+			{
+				severity: diag.error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
+				range: {
+					// VSC positions are zero-based
+					start: {
+						line: diag.start.line - 1,
+						character: diag.start.character - 1
+					},
+					end: {
+						line: diag.end.line - 1,
+						character: diag.end.character
+					},
+				},
+				message: diag.msg,
+				source: 'jitterbit'
+			} as Diagnostic
+		);
+	}
+	return result;
 }
 
 connection.onDidChangeWatchedFiles(_change => {
