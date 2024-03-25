@@ -12,7 +12,7 @@
 		"url": "https://github.com/michal-kapala/vscode-jitterbit"
 	},
 	"dependencies": {
-		"jitterbit-script": "^1.0.1",
+		"jitterbit-script": "^1.0.4",
 		"vscode-languageserver": "^7.0.0",
 		"vscode-languageserver-textdocument": "^1.0.4"
 	},

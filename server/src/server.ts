@@ -6,26 +6,24 @@ import {
 	createConnection,
 	TextDocuments,
 	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	CompletionItem,
-	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult
 } from 'vscode-languageserver/node';
-
-import {
-	TextDocument
-} from 'vscode-languageserver-textdocument';
-
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	Diagnostic as JbDiagnostic,
 	Parser,
 	Typechecker
 } from 'jitterbit-script';
+import { initCompletionList } from './completion';
+import { makeDiagnostics } from './diagnostics';
+
+const jbApiCompletionList = initCompletionList();
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -137,13 +135,13 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
+	// TODO: Incremental updates because the editor slows down noticeably
 	validateTextDocument(change.document);
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
-	// TODO: Incremental updates because the editor slows down noticeably
 	const script = textDocument.getText();
 	const parser = new Parser();
 	const jbDiags: JbDiagnostic[] = [];
@@ -162,35 +160,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
-/**
- * Transforms typechecker diagnostics into VSCode ones.
- * @param diags 
- */
-function makeDiagnostics(diags: JbDiagnostic[]): Diagnostic[] {
-	const result: Diagnostic[] = [];
-	for(const diag of diags) {
-		result.push(
-			{
-				severity: diag.error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
-				range: {
-					// VSC positions are zero-based
-					start: {
-						line: diag.start.line - 1,
-						character: diag.start.character - 1
-					},
-					end: {
-						line: diag.end.line - 1,
-						character: diag.end.character
-					},
-				},
-				message: diag.msg,
-				source: 'jitterbit'
-			} as Diagnostic
-		);
-	}
-	return result;
-}
-
 connection.onDidChangeWatchedFiles(_change => {
 	// Monitored files have change in VSCode
 	connection.console.log('We received an file change event');
@@ -199,21 +168,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
+		return jbApiCompletionList;
 	}
 );
 
@@ -221,13 +176,6 @@ connection.onCompletion(
 // the completion list.
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
-		if (item.data === 1) {
-			item.detail = 'TypeScript details';
-			item.documentation = 'TypeScript documentation';
-		} else if (item.data === 2) {
-			item.detail = 'JavaScript details';
-			item.documentation = 'JavaScript documentation';
-		}
 		return item;
 	}
 );
