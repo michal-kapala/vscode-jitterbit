@@ -1,5 +1,6 @@
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver/node';
 import { Diagnostic as JbDiagnostic } from 'jitterbit-script';
+import { makeRange } from './position';
 
 /**
  * Transforms typechecker diagnostics into VSCode ones.
@@ -12,17 +13,7 @@ export function makeDiagnostics(diags: JbDiagnostic[]): Diagnostic[] {
 		result.push(
 			{
 				severity: diag.error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
-				range: {
-					// VSC positions are zero-based
-					start: {
-						line: diag.start.line - 1,
-						character: diag.start.character - 1
-					},
-					end: {
-						line: diag.end.line - 1,
-						character: diag.end.character
-					},
-				},
+				range: makeRange(diag.start, diag.end),
 				message: diag.msg,
 				source: 'jitterbit'
 			} as Diagnostic

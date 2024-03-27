@@ -12,7 +12,11 @@ import {
 	CompletionItem,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	HoverParams,
+	Hover,
+	SignatureHelpParams,
+	SignatureHelp
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
@@ -21,8 +25,9 @@ import {
 	Typechecker
 } from 'jitterbit-script';
 import { getCompletion } from './completion';
-import { makeDiagnostics } from './diagnostics';
+import { makeDiagnostics } from './utils/diagnostics';
 import { CodeAnalysis } from 'jitterbit-script/build/typechecker/ast';
+import { getHover } from './hover';
 
 // Jitterbit global items
 let latestAnalysis: CodeAnalysis = {
@@ -63,10 +68,10 @@ connection.onInitialize((params: InitializeParams) => {
 	const result: InitializeResult = {
 		capabilities: {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
-			// Tell the client that this server supports code completion.
 			completionProvider: {
 				resolveProvider: true
-			}
+			},
+			hoverProvider: true,
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -175,7 +180,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		return getCompletion(latestAnalysis, _textDocumentPosition.position);
+		return getCompletion(latestAnalysis);
 	}
 );
 
@@ -184,6 +189,13 @@ connection.onCompletion(
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		return item;
+	}
+);
+
+// This handles the docs on hover event.
+connection.onHover(
+	(params: HoverParams): Hover | null => {
+		return getHover(latestAnalysis, params);
 	}
 );
 

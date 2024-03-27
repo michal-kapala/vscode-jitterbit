@@ -1,5 +1,5 @@
 import { Api, CodeAnalysis } from 'jitterbit-script';
-import { CompletionItem, CompletionItemKind, MarkupKind, Position } from 'vscode-languageserver/node';
+import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver/node';
 
 const jbApiCompletionItems = initCompletionList();
 
@@ -76,8 +76,7 @@ function initCompletionList(): CompletionItem[] {
  * @param analysis 
  * @param curPos
  */
-export function getCompletion(analysis: CodeAnalysis, curPos: Position): CompletionItem[] {
-	console.log('getCompletion() called');
+export function getCompletion(analysis: CodeAnalysis): CompletionItem[] {
 	const result = [...jbApiCompletionItems];
 	const scriptVars: CompletionItem[] = [];
 	let index = result.length;
