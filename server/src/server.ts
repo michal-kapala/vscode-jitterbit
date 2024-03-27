@@ -20,10 +20,17 @@ import {
 	Parser,
 	Typechecker
 } from 'jitterbit-script';
-import { initCompletionList } from './completion';
+import { getCompletion } from './completion';
 import { makeDiagnostics } from './diagnostics';
+import { CodeAnalysis } from 'jitterbit-script/build/typechecker/ast';
 
-const jbApiCompletionList = initCompletionList();
+// Jitterbit global items
+let latestAnalysis: CodeAnalysis = {
+	ast: [],
+	diagnostics: [],
+	vars: [],
+	callees: []
+};
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -149,8 +156,8 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	let diagnostics: Diagnostic[] = [];
 	try {
 		const ast = parser.parse(script, jbDiags);
-		const analysis = Typechecker.analyze(ast, jbDiags);
-		diagnostics = makeDiagnostics(analysis.diagnostics);
+		latestAnalysis = Typechecker.analyze(ast, jbDiags);
+		diagnostics = makeDiagnostics(latestAnalysis.diagnostics);
 	} catch(e) {
 		// jitterbit-script error - should be reported as an issue
 		console.error(e);
@@ -168,7 +175,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		return jbApiCompletionList;
+		return getCompletion(latestAnalysis, _textDocumentPosition.position);
 	}
 );
 
