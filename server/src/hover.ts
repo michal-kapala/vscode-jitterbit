@@ -2,7 +2,16 @@ import { Api, CodeAnalysis, TypedGlobalIdentifier } from 'jitterbit-script';
 import { Hover, HoverParams, MarkedString } from 'vscode-languageserver';
 import { idInRange, makeRange } from './utils/position';
 
-export function getHover(analysis: CodeAnalysis, params: HoverParams): Hover | null {
+/**
+ * Returns hover information for identifiers.
+ * @param params 
+ * @param analysis 
+ * @returns 
+ */
+export function getHover(params: HoverParams, analysis?: CodeAnalysis): Hover | null {
+	if(!analysis)
+		return null;
+
 	// variables
 	for(const id of analysis.vars) {
 		// match position

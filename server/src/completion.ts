@@ -76,8 +76,11 @@ function initCompletionList(): CompletionItem[] {
  * @param analysis 
  * @param curPos
  */
-export function getCompletion(analysis: CodeAnalysis): CompletionItem[] {
+export function getCompletion(analysis?: CodeAnalysis): CompletionItem[] {
 	const result = [...jbApiCompletionItems];
+	if(!analysis)
+		return result;
+	
 	const scriptVars: CompletionItem[] = [];
 	let index = result.length;
 	// add deduped local/global variables

@@ -15,27 +15,27 @@ import {
 	InitializeResult,
 	HoverParams,
 	Hover,
-	SignatureHelpParams,
-	SignatureHelp
+	ReferenceParams,
+	Location,
+	RenameFilesParams,
+	DeleteFilesParams,
+	CreateFilesParams,
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	Diagnostic as JbDiagnostic,
 	Parser,
-	Typechecker
+	Typechecker,
+	CodeAnalysis
 } from 'jitterbit-script';
 import { getCompletion } from './completion';
 import { makeDiagnostics } from './utils/diagnostics';
-import { CodeAnalysis } from 'jitterbit-script/build/typechecker/ast';
 import { getHover } from './hover';
+import { getRefs } from './refs';
+import { initFileMap } from './utils/workspace';
 
-// Jitterbit global items
-let latestAnalysis: CodeAnalysis = {
-	ast: [],
-	diagnostics: [],
-	vars: [],
-	callees: []
-};
+// workspace global items
+const files = initFileMap();
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -72,12 +72,19 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true
 			},
 			hoverProvider: true,
-		}
+			referencesProvider: true
+		},
 	};
 	if (hasWorkspaceFolderCapability) {
+		const filters = [{scheme: 'file', pattern: {glob: '**/*.jb'}}];
 		result.capabilities.workspace = {
 			workspaceFolders: {
 				supported: true
+			},
+			fileOperations: {
+				didCreate: {filters},
+				didDelete: {filters},
+				didRename: {filters}
 			}
 		};
 	}
@@ -144,6 +151,27 @@ documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 });
 
+connection.workspace.onDidRenameFiles((params: RenameFilesParams) => {
+	for(const file of params.files) {
+		const analysis = files.get(file.oldUri) ?? {ast: [], diagnostics: [], vars: [], callees: []};
+		files.set(file.newUri, analysis);
+		files.delete(file.oldUri);
+		connection.sendDiagnostics({diagnostics: [], uri: file.oldUri});
+	}
+});
+
+connection.workspace.onDidCreateFiles((params: CreateFilesParams) => {
+	for(const file of params.files)
+		files.set(file.uri, {ast: [], diagnostics: [], vars: [], callees: []});
+});
+
+connection.workspace.onDidDeleteFiles((params: DeleteFilesParams) => {
+	for(const file of params.files) {
+		files.delete(file.uri);
+		connection.sendDiagnostics({diagnostics: [], uri: file.uri});
+	}
+});
+
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
@@ -159,14 +187,22 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const jbDiags: JbDiagnostic[] = [];
 
 	let diagnostics: Diagnostic[] = [];
+	let analysis: CodeAnalysis = {
+		ast: [],
+		diagnostics: [],
+		vars: [],
+		callees: []
+	};
 	try {
 		const ast = parser.parse(script, jbDiags);
-		latestAnalysis = Typechecker.analyze(ast, jbDiags);
-		diagnostics = makeDiagnostics(latestAnalysis.diagnostics);
+		analysis = Typechecker.analyze(ast, jbDiags);
+		diagnostics = makeDiagnostics(analysis.diagnostics);
 	} catch(e) {
 		// jitterbit-script error - should be reported as an issue
 		console.error(e);
 	}
+	// update files
+	files.set(textDocument.uri, analysis);
 	
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
@@ -179,7 +215,8 @@ connection.onDidChangeWatchedFiles(_change => {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
+	(params: TextDocumentPositionParams): CompletionItem[] => {
+		const latestAnalysis = files.get(params.textDocument.uri);
 		return getCompletion(latestAnalysis);
 	}
 );
@@ -195,7 +232,16 @@ connection.onCompletionResolve(
 // This handles the docs on hover event.
 connection.onHover(
 	(params: HoverParams): Hover | null => {
-		return getHover(latestAnalysis, params);
+		const latestAnalysis = files.get(params.textDocument.uri);
+		return getHover(params, latestAnalysis);
+	}
+);
+
+// This handles the 'Find All References' action event.
+connection.onReferences(
+	(params: ReferenceParams): Location[] | null => {
+		const analysis = files.get(params.textDocument.uri);
+		return getRefs(params, files, analysis);
 	}
 );
 
