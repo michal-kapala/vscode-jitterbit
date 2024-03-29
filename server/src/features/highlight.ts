@@ -2,6 +2,12 @@ import { CodeAnalysis } from 'jitterbit-script';
 import { DocumentHighlight, DocumentHighlightParams } from 'vscode-languageserver';
 import { idInRange, makeRange } from '../utils/position';
 
+/**
+ * Returns the variable/function identifiers to be highlighted in the current document.
+ * @param params 
+ * @param analysis 
+ * @returns 
+ */
 export function documentHighlight(params: DocumentHighlightParams, analysis?: CodeAnalysis): DocumentHighlight[] | null {
 	if(!analysis)
 		return null;

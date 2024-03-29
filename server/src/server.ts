@@ -24,6 +24,8 @@ import {
 	WorkspaceEdit,
 	DocumentHighlightParams,
 	DocumentHighlight,
+	SignatureHelp,
+	SignatureHelpParams,
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
@@ -39,6 +41,7 @@ import { getRefs } from './features/refs';
 import { initFileMap } from './utils/workspace';
 import { rename } from './features/rename';
 import { documentHighlight } from './features/highlight';
+import { signatureHelp } from './features/signature';
 
 // workspace global items
 const files = initFileMap();
@@ -80,7 +83,10 @@ connection.onInitialize((params: InitializeParams) => {
 			hoverProvider: true,
 			referencesProvider: true,
 			renameProvider: true,
-			documentHighlightProvider : true
+			documentHighlightProvider : true,
+			signatureHelpProvider : {
+				triggerCharacters: ['(', ',', ')'],
+			}
 		},
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -261,10 +267,19 @@ connection.onRenameRequest(
 	}
 );
 
+// This handles on-click variable/function highlights.
 connection.onDocumentHighlight(
 	(params: DocumentHighlightParams): DocumentHighlight[] | null => {
 		const analysis = files.get(params.textDocument.uri);
 		return documentHighlight(params, analysis);
+	}
+);
+
+// This handles function signature autocompletion.
+connection.onSignatureHelp(
+	(params: SignatureHelpParams): SignatureHelp | null => {
+		const analysis = files.get(params.textDocument.uri);
+		return signatureHelp(params, analysis);
 	}
 );
 

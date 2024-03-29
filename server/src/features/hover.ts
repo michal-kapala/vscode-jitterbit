@@ -49,13 +49,14 @@ export function getHover(params: HoverParams, analysis?: CodeAnalysis): Hover | 
 			const func = Api.getFunc(id.symbol);
 			if(!func)
 				continue;
-			const contents: MarkedString[] = [
-				{
+			const contents: MarkedString[] = [];
+			for(let idx = 0; idx < func.signatures.length; idx++) {
+				contents.push({
 					language: "jitterbit",
-					value: `(function) ${func}`
-				},
-				func.docs
-			];
+					value: `(function) ${func.toString(idx)}`
+				});
+			}
+			contents.push(func.docs);
 			return {contents, range: makeRange(id.start, id.end)};
 		}
 	}
