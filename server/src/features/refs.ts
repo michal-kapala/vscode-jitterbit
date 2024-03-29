@@ -1,7 +1,7 @@
 import { CodeAnalysis } from 'jitterbit-script';
 import { Location, ReferenceParams } from 'vscode-languageserver';
-import { idInRange, makeRange } from './utils/position';
-import { FileMap } from './utils/workspace';
+import { idInRange, makeRange } from '../utils/position';
+import { FileMap } from '../utils/workspace';
 
 /**
  * Returns references for all **opened** files.

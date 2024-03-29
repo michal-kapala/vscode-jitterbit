@@ -22,6 +22,8 @@ import {
 	CreateFilesParams,
 	RenameParams,
 	WorkspaceEdit,
+	DocumentHighlightParams,
+	DocumentHighlight,
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
@@ -30,12 +32,13 @@ import {
 	Typechecker,
 	CodeAnalysis
 } from 'jitterbit-script';
-import { getCompletion } from './completion';
+import { getCompletion } from './features/completion';
 import { makeDiagnostics } from './utils/diagnostics';
-import { getHover } from './hover';
-import { getRefs } from './refs';
+import { getHover } from './features/hover';
+import { getRefs } from './features/refs';
 import { initFileMap } from './utils/workspace';
-import { rename } from './rename';
+import { rename } from './features/rename';
+import { documentHighlight } from './features/highlight';
 
 // workspace global items
 const files = initFileMap();
@@ -76,7 +79,8 @@ connection.onInitialize((params: InitializeParams) => {
 			},
 			hoverProvider: true,
 			referencesProvider: true,
-			renameProvider: true
+			renameProvider: true,
+			documentHighlightProvider : true
 		},
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -254,6 +258,13 @@ connection.onRenameRequest(
 	(params: RenameParams): WorkspaceEdit | null => {
 		const analysis = files.get(params.textDocument.uri);
 		return rename(params, files, analysis);
+	}
+);
+
+connection.onDocumentHighlight(
+	(params: DocumentHighlightParams): DocumentHighlight[] | null => {
+		const analysis = files.get(params.textDocument.uri);
+		return documentHighlight(params, analysis);
 	}
 );
 

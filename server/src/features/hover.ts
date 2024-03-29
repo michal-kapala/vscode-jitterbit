@@ -1,6 +1,6 @@
 import { Api, CodeAnalysis, TypedGlobalIdentifier } from 'jitterbit-script';
 import { Hover, HoverParams, MarkedString } from 'vscode-languageserver';
-import { idInRange, makeRange } from './utils/position';
+import { idInRange, makeRange } from '../utils/position';
 
 /**
  * Returns hover information for identifiers.

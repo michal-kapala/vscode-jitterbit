@@ -1,7 +1,7 @@
 import { RenameParams, WorkspaceEdit } from 'vscode-languageserver';
-import { FileMap } from './utils/workspace';
+import { FileMap } from '../utils/workspace';
 import { CodeAnalysis } from 'jitterbit-script';
-import { idInRange, makeRange } from './utils/position';
+import { idInRange, makeRange } from '../utils/position';
 
 /**
  * Renames a variable's refs in all **opened** files.
