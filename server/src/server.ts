@@ -20,6 +20,8 @@ import {
 	RenameFilesParams,
 	DeleteFilesParams,
 	CreateFilesParams,
+	RenameParams,
+	WorkspaceEdit,
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
@@ -33,6 +35,7 @@ import { makeDiagnostics } from './utils/diagnostics';
 import { getHover } from './hover';
 import { getRefs } from './refs';
 import { initFileMap } from './utils/workspace';
+import { rename } from './rename';
 
 // workspace global items
 const files = initFileMap();
@@ -72,7 +75,8 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true
 			},
 			hoverProvider: true,
-			referencesProvider: true
+			referencesProvider: true,
+			renameProvider: true
 		},
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -237,11 +241,19 @@ connection.onHover(
 	}
 );
 
-// This handles the 'Find All References' action event.
+// This handles 'Find All References' action event.
 connection.onReferences(
 	(params: ReferenceParams): Location[] | null => {
 		const analysis = files.get(params.textDocument.uri);
 		return getRefs(params, files, analysis);
+	}
+);
+
+// This handles 'Rename Symbol' action event.
+connection.onRenameRequest(
+	(params: RenameParams): WorkspaceEdit | null => {
+		const analysis = files.get(params.textDocument.uri);
+		return rename(params, files, analysis);
 	}
 );
 

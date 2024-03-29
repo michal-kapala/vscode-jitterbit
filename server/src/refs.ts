@@ -18,7 +18,7 @@ export function getRefs(params: ReferenceParams, files: FileMap, analysis?: Code
 	let symbol = "";
 	let isVar = true;
 	let isLocal = false;
-	// global/system variables
+	// variables
 	for(const id of analysis.vars) {
 		if(idInRange(params.position, makeRange(id.start, id.end))) {
 			symbol = id.symbol;
