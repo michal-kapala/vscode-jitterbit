@@ -48,6 +48,22 @@ export function rename(params: RenameParams, files: FileMap, analysis?: CodeAnal
 		return edit;
 	}
 
+	// global/system variables - edit refs in all tracked (opened) files
+	if(edit.changes) {
+		for(const file of files) {
+			edit.changes[file[0]] = [];
+			for(const global of file[1].vars) {
+				if(global.symbol === symbol) {
+					edit.changes[file[0]].push({
+						range: makeRange(global.start, global.end),
+						newText: `$${params.newName}`
+					});
+				}
+			}
+		}
+		return edit;
+	}
+
 	// item irrenamable
 	return null;
 }
