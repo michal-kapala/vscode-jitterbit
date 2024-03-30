@@ -275,7 +275,7 @@ connection.onDocumentHighlight(
 	}
 );
 
-// This handles function signature autocompletion.
+// This handles function signature help UI when typing.
 connection.onSignatureHelp(
 	(params: SignatureHelpParams): SignatureHelp | null => {
 		const analysis = files.get(params.textDocument.uri);
