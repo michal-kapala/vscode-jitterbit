@@ -6,6 +6,7 @@
 			"name": "Comments",
 			"scope": [
 				"comment",
+				"comment.jitterbit",
 				"comment.block.jitterbit",
 				"comment.line.double-slash.jitterbit"
 			],

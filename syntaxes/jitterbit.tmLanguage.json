@@ -16,11 +16,11 @@
 				},
 				{
 					"name": "comment.block.jitterbit",
-					"begin": "(.|\\s)(?=\\/\\*)",
-					"end": "(?<=\\*\\/)(.|\\s)",
+					"begin": "/\\*",
+					"end": "\\*/",
 					"patterns": [
 						{
-							"match": "\\/\\*(.|\\s|\\r\\n)*\\*\\/"
+							"match": "(.|\\s|\\r|\\n)*"
 						}
 					]
 				}
