@@ -1,11 +1,11 @@
 {
   "name": "jitterbit",
   "displayName": "Jitterbit",
-  "description": "Syntax support for Jitterbit Script language.",
-  "author": "Asinit Ltd.",
+  "description": "Language support for Jitterbit Script programming language",
+  "author": "Michał Kapała",
   "publisher": "michal-kapala",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/michal-kapala/vscode-jitterbit"
