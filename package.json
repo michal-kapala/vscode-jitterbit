@@ -5,7 +5,8 @@
   "author": "Michał Kapała",
   "publisher": "michal-kapala",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "icon": "./icons/jitterbit_icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/michal-kapala/vscode-jitterbit"
