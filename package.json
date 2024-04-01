@@ -58,8 +58,8 @@
           ".jb"
         ],
         "icon": {
-          "light": "./icons/jitterbit_icon.svg",
-          "dark": "./icons/jitterbit_icon.svg"
+          "light": "./icons/jitterbit_icon.png",
+          "dark": "./icons/jitterbit_icon.png"
         },
         "configuration": "./language-configuration.json"
       }
