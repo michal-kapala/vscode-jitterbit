@@ -1,5 +1,5 @@
 import { Api, CodeAnalysis, TypedGlobalIdentifier } from 'jitterbit-script';
-import { Hover, HoverParams, MarkedString } from 'vscode-languageserver';
+import { Hover, HoverParams, MarkupContent, MarkupKind } from 'vscode-languageserver';
 import { idInRange, makeRange } from '../utils/position';
 
 /**
@@ -25,38 +25,30 @@ export function getHover(params: HoverParams, analysis?: CodeAnalysis): Hover | 
 				? `(${varType}, ${Api.getSysVar(id.symbol)?.type}) ${id.symbol}: ${id.type}`
 				: `(${varType}) ${id.symbol}: ${id.type}`;
 
-			const contents: MarkedString[] = [
-				{
-					language: "jitterbit",
-					value: signature
-				}
-			];
-			
+			let value = `\`\`\`jitterbit\n${signature}\n\`\`\`\n`;
 			if(varType === "system") {
 				const sysVar = Api.getSysVar(id.symbol);
-				if(sysVar) {
-					contents.push(sysVar.description);
-				}
+				if(sysVar)
+					value += sysVar.description;
 			}
+			const contents = {kind: MarkupKind.Markdown, value};
 			return {contents, range: makeRange(id.start, id.end)};
 		}
 	}
 	
 	// functions
+	const prefix = `\`\`\`jitterbit\n(function)`;
 	for(const id of analysis.callees) {
 		const range = makeRange(id.start, id.end);
 		if(idInRange(params.position, range)) {
 			const func = Api.getFunc(id.symbol);
 			if(!func)
 				continue;
-			const contents: MarkedString[] = [];
-			for(let idx = 0; idx < func.signatures.length; idx++) {
-				contents.push({
-					language: "jitterbit",
-					value: `(function) ${func.toString(idx)}`
-				});
-			}
-			contents.push(func.docs);
+			let value = "";
+			for(let idx = 0; idx < func.signatures.length; idx++)
+				value += `${prefix} ${func.toString(idx)}\n\`\`\`\n`;
+			value += func.docs;
+			const contents: MarkupContent = {kind: MarkupKind.Markdown, value};
 			return {contents, range: makeRange(id.start, id.end)};
 		}
 	}

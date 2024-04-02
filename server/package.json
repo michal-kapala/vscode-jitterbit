@@ -1,8 +1,8 @@
 {
 	"name": "jitterbit-lsp-server",
-	"description": "Community Jitterbit Script LSP Server",
-	"version": "1.0.0",
-	"author": "Asinit Ltd.",
+	"description": "Jitterbit Script LSP Server",
+	"version": "1.0.1",
+	"author": "michal-kapala",
 	"license": "MIT",
 	"engines": {
 		"node": "*"
